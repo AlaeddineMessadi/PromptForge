@@ -86,9 +86,18 @@ venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Run the server
+# Run the server (auto-falls back to the next free port if 5000 is taken)
 python app.py
 ```
+
+### Docker
+- Build image: `docker build -t promptforge:local .`
+- Run: `docker run -p 5000:5000 promptforge:local`
+- If host port 5000 is busy, map another host port: `docker run -p 5001:5000 promptforge:local` (open http://localhost:5001); for a random host port use `-p 0:5000` and check `docker port <container>`.
+- Persist data (recommended): mount JSON pages and images, e.g.  
+  `docker run -p 5000:5000 -v $(pwd)/images:/app/images -v $(pwd)/STYLES.json:/app/STYLES.json promptforge:local`  
+  Add other `*.json` files as needed.
+- Compose: `docker-compose up --build` (includes common volume mounts). Suitable for Dokploy by setting the build context or pulling a prebuilt image.
 
 ## 📖 Usage
 

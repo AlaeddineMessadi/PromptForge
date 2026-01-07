@@ -1,6 +1,7 @@
 from flask import Flask, send_from_directory, jsonify, request, make_response
 import os
 import json
+import socket
 
 app = Flask(__name__, static_folder='.')
 
@@ -93,5 +94,28 @@ def upload_image():
 
     return jsonify({"message": "Image saved", "filename": safe_name})
 
+def _find_available_port(start_port: int, max_attempts: int = 10) -> int:
+    """Return an open port, scanning sequentially from start_port."""
+    port = start_port
+    for _ in range(max_attempts):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            try:
+                sock.bind(("0.0.0.0", port))
+                return port
+            except OSError:
+                port += 1
+    raise RuntimeError(f"No available port found starting at {start_port}")
+
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    env_port = int(os.environ.get('PORT', 5000))
+    chosen_port = _find_available_port(env_port)
+    if chosen_port != env_port:
+        print(f"Port {env_port} in use; falling back to {chosen_port}")
+
+    app.run(
+        host='0.0.0.0',
+        port=chosen_port,
+        debug=os.environ.get('FLASK_DEBUG') == '1'
+    )

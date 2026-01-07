@@ -1,0 +1,14 @@
+.git
+venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.dist-info/
+.pytest_cache
+.DS_Store
+node_modules
+coverage
+*.log
+*.env
