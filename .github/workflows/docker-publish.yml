@@ -8,7 +8,6 @@ on:
 
 jobs:
   build-and-push:
-    if: ${{ hashFiles('Dockerfile') != '' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -45,7 +44,7 @@ jobs:
 
   sync-readme:
     needs: build-and-push
-    if: ${{ hashFiles('README.md') != '' && needs.build-and-push.result == 'success' }}
+    if: ${{ needs.build-and-push.result == 'success' }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
